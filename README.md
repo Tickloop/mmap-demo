@@ -14,7 +14,3 @@ go - run benchmarks
 `
 $> go test -bench . -benchmem
 `
-
-## Why?
-
-[Article](https://tickloop.tech)
