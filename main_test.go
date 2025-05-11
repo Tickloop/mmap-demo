@@ -38,5 +38,11 @@ func Benchmark(b *testing.B) {
 				mmapRead(fmt.Sprintf("./testdata/%s", benchfile))
 			}
 		})
+
+		b.Run(fmt.Sprintf("bachRead/%s", benchName), func(b *testing.B) {
+			for b.Loop() {
+				bachRead(fmt.Sprintf("./testdata/%s", benchfile))
+			}
+		})
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"os"
 	"syscall"
 )
@@ -21,13 +22,14 @@ func process(data *[]byte) int {
 	return countLetterB
 }
 
-func krnlRead(path string) {
+func krnlRead(path string) int {
 	data, err := os.ReadFile(path)
 	check(err)
-	process(&data)
+	acc := process(&data)
+	return acc
 }
 
-func mmapRead(path string) {
+func mmapRead(path string) int {
 	fileInfo, err := os.Stat(path)
 	check(err)
 
@@ -42,6 +44,23 @@ func mmapRead(path string) {
 			panic(err)
 		}
 	}()
-	process(&data)
+	acc := process(&data)
+	return acc
+}
 
+func bachRead(path string) int {
+	file, err := os.Open(path)
+	check(err)
+	defer file.Close()
+
+	offset := 0
+	acc := 0
+	data := make([]byte, 4 * 1024)
+	n, err := file.ReadAt(data, int64(offset))
+	for err != io.EOF {
+		acc += process(&data)
+		offset += n
+		n, err = file.ReadAt(data, int64(offset))
+	}
+	return acc
 }
